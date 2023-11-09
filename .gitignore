@@ -6,5 +6,4 @@ data_process/dataset/BraTS2021/image_arrays/
 data_process/dataset/BraTS2021/label_arrays/
 networks/
 predictions/
-README.md
 /root/daehyeonchoi/brats/wavediffseg/pytorch-ddpm/logs/
