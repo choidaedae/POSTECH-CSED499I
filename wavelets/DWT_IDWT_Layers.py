@@ -307,6 +307,7 @@ class DWT_2D(Module):
         matrix_g_1 = matrix_g_1[:, (self.band_length_half - 1):end]
         matrix_g_1 = np.transpose(matrix_g_1)
 
+        
         if torch.cuda.is_available():
             self.matrix_low_0 = torch.Tensor(matrix_h_0).cuda()
             self.matrix_low_1 = torch.Tensor(matrix_h_1).cuda()
@@ -317,7 +318,7 @@ class DWT_2D(Module):
             self.matrix_low_1 = torch.Tensor(matrix_h_1)
             self.matrix_high_0 = torch.Tensor(matrix_g_0)
             self.matrix_high_1 = torch.Tensor(matrix_g_1)
-
+        
     def forward(self, input):
         """
         input_lfc = \mathcal{L} * input * \mathcal{L}^T
@@ -331,6 +332,15 @@ class DWT_2D(Module):
         self.input_height = input.size()[-2]
         self.input_width = input.size()[-1]
         self.get_matrix()
+        
+        self.device = input.device
+        
+        if torch.cuda.is_available(): # specify cuda device 
+            self.matrix_low_0 = self.matrix_low_0.to(self.device)
+            self.matrix_low_1 = self.matrix_low_1.to(self.device)
+            self.matrix_high_0 = self.matrix_high_0.to(self.device)
+            self.matrix_high_1 = self.matrix_high_1.to(self.device)
+            
         return DWTFunction_2D.apply(input, self.matrix_low_0, self.matrix_low_1, self.matrix_high_0, self.matrix_high_1)
 
 

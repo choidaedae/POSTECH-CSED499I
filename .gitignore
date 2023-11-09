@@ -1,9 +1,10 @@
 data_process/dataset/BraTS2021/data_h5/
 data_process/dataset/BraTS2021/data_niigz/
 data_process/dataset/BraTS2021/scripts/
-data_process/dataset/BraTS21-17_Mapping.csv
+data_process/dataset/BraTS2021/normalized_image_arrays/
+data_process/dataset/BraTS2021/image_arrays/
+data_process/dataset/BraTS2021/label_arrays/
 networks/
 predictions/
 README.md
-train.py
-utils.py 
+/root/daehyeonchoi/brats/wavediffseg/pytorch-ddpm/logs/
