@@ -13,10 +13,10 @@ import os
 class Brats2DDataset(Dataset):
     def __init__(self, transform=None):
         
-        self.path = '/root/daehyeonchoi/brats/wavediffseg/data_process/dataset/BraTS2021/image_arrays'
+        self.path = '/root/daehyeonchoi/csed491/wavediffseg/data_process/dataset/BraTS2021/normalized_image_arrays'
         self.datas = os.listdir(self.path)
-        self.image_dir = '/root/daehyeonchoi/brats/wavediffseg/data_process/dataset/BraTS2021/image_arrays'
-        self.label_dir = '/root/daehyeonchoi/brats/wavediffseg/data_process/dataset/BraTS2021/label_arrays'
+        self.image_dir = '/root/daehyeonchoi/csed491/wavediffseg/data_process/dataset/BraTS2021/normalized_image_arrays'
+        self.label_dir = '/root/daehyeonchoi/csed491/wavediffseg/data_process/dataset/BraTS2021/label_arrays'
         self.transform = transform 
     
     def __len__(self):
@@ -24,9 +24,8 @@ class Brats2DDataset(Dataset):
 
     def __getitem__(self, idx):
         
-        timestep = np.random.randint(0, 10)
-        images = np.load(os.path.join(self.image_dir, self.datas[idx]))[:, :, :, timestep]
-        label = np.load(os.path.join(self.label_dir, self.datas[idx]))[:, :, timestep]
+        images = np.load(os.path.join(self.image_dir, self.datas[idx]))
+        label = np.load(os.path.join(self.label_dir, self.datas[idx]))
         
 
         if self.transform:
