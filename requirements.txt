@@ -2,7 +2,10 @@ absl-py==0.11.0
 scipy==1.8
 tensorflow==2.7.0
 tensorboardX==2.1
-torch==1.8.1
+torch
 torchvision
 tqdm==4.55.1
 numpy==1.21.1
+Pywavelets
+nibabel
+blobfile

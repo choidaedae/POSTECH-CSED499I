@@ -16,5 +16,8 @@ model/pixel_classifiers/
 model/wandb/
 feature_visualize.py
 generate_dataset.py
+*/__pycache__
 *.ipynb
+*.zip
+
 .vscode/

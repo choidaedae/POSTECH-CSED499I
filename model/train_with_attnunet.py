@@ -30,11 +30,11 @@ def train(args):
     train_dir = args['train_dir']
     
     train_data = Brats2DDataset(train_dir)
-    train_loader = DataLoader(dataset=train_data, batch_size=train_args['batch_size'], shuffle = True, drop_last = True) # brats dataset loader 
+    train_loader = DataLoader(dataset=train_data, batch_size=train_args['batch_size'], shuffle = True, drop_last = True, num_workers= 16) # brats dataset loader 
 
     run_device = train_args['run_device']
     print(f"Number of data: {len(train_loader)}")
-    wandb.log({'run_device': f"cuda:{run_device}"})
+    wandb.log({'run_device': run_device})
     nSamples = [54667, 275, 1677, 981] # 0
     normedWeights = []
     for x in nSamples:
@@ -42,9 +42,6 @@ def train(args):
     normedWeights = torch.FloatTensor(normedWeights)
     normedWeights = (normedWeights / torch.sum(normedWeights)).to(f"cuda:{run_device}")
     
-    print(normedWeights)
-    
-    #L_seg = DiceLoss()
     L_seg = nn.CrossEntropyLoss(weight = normedWeights) # or Dice Loss 
     L_contrast = SymmetricContLoss() if args['L_contrast'] else None
     seg_net = AttentionUNet(img_ch = 4, output_ch = args['number_class']).to(dev_num(run_device))
@@ -54,13 +51,12 @@ def train(args):
     
     _lambda = train_args['lambda'] # hyperparameter
     wandb.log({'lambda': _lambda})
-    #model_parameters = list(model.parameters()) + list(seg_net.parameters())
-    # parameter5
     optimizer = torch.optim.Adam(params = [{'params': seg_net.parameters(), 'lr': 0.001}], lr=0.001)
     
     for epoch in range(train_args['epochs']): # epoch 
         
         for i, (image, label) in enumerate(train_loader): # iteration 
+                        
             image, label = image.to(dev_num(run_device)), label.to(dev_num(run_device))
             optimizer.zero_grad()
             out = seg_net(image)
@@ -75,28 +71,31 @@ def train(args):
             b_label = torch.stack((ohot_label[:, 0, :, :], ohot_label[:, 1:, :, :].sum(dim=1)), dim=1)
             b_out = torch.stack((p_out[:, 0, :, :], p_out[:, 1:, :, :].sum(dim=1)), dim=1)
             b_label_flip = vflip(b_label) # vertical flip 
+            
             l_contrast = L_contrast(b_out, b_label_flip)
             
             loss = l_seg + _lambda*l_contrast # l_contrast: dot product
-            if i % 100 == 0: print(f'[Train Mode] Current Epoch: {epoch}, Current Iteration: {i}, Train Loss: {loss}')
+            if i % 1 == 0: print(f'[Train Mode] Current Epoch: {epoch}, Current Iteration: {i}, Train Loss: {loss}')
             loss.requires_grad_(True)
             loss.backward()
             optimizer.step()
             wandb.log({'train_loss': loss})
             
-        if epoch % train_args['val_freq'] == 0 and epoch != 0 : 
-            _, dice = validation(args, epoch, seg_net)
+            break
             
+        if epoch % train_args['val_freq'] == 0: 
+            _, dice = validation(args, epoch, seg_net)
+            wandb.log({"Epoch": epoch})
             wandb.log({"mean Dice Score": dice.mean()})
-            wandb.log({"Dice Score for NCR": dice[0]})
-            wandb.log({"Dice Score for Edema": dice[1]})
-            wandb.log({"Dice Score for Enhan Tumor": dice[2]})
+            wandb.log({"Dice Score for NCR": dice[1]})
+            wandb.log({"Dice Score for Edema": dice[2]})
+            wandb.log({"Dice Score for Enhan Tumor": dice[3]})
             
             if(dice.mean() > best_dice):
                 best_dice = dice.mean()
                 torch.save(seg_net.state_dict(), os.path.join(train_args['save_path'], f'feature_voter_e{epoch}.pt'))
 
-            
+        
 def validation(args, epoch, seg_net):
     val_args = args['validation']
     val_dir = args['val_dir']
@@ -121,7 +120,7 @@ def validation(args, epoch, seg_net):
             preds.append(pred)
             labels.append(label)
             
-        save_predictions(args, preds, epoch)
+        save_predictions(args, labels, epoch)
             
         # calculate mIoU
         mIoU = compute_iou(args, preds, labels)
@@ -136,7 +135,7 @@ def validation(args, epoch, seg_net):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     add_dict_to_argparser(parser, model_and_diffusion_defaults())
-    default_json_dir = "/root/daehyeonchoi/csed491/wavediffseg/ddpm-segmentation/experiments/brats/train_attnunet.json"
+    default_json_dir = "/root/daehyeonchoi/POSTECH-CSED491/wavelet-diffusion-segmentation/model/experiments/train_attnunet.json"
 
     
     parser.add_argument('--exp', type=str, default=default_json_dir)
@@ -152,7 +151,7 @@ if __name__ == '__main__':
     
     config = {
         'model_name' : 'attnunet-contloss',
-        'batch_size' : 32,
+        'batch_size' : 64,
         'epoch' : opts['train']['epochs'],
         'criterion' : 'ContLoss',
         'optimizer' : 'adam',
@@ -165,7 +164,7 @@ if __name__ == '__main__':
     if len(opts['steps']) > 0:
         suffix = '_'.join([str(step) for step in opts['steps']])
         suffix += '_' + '_'.join([str(step) for step in opts['blocks']])
-        suffix += '_' +str(opts['train']['lambda'])
+        suffix += '_' +str(opts['train']['lambda']) + '_visualization'
         opts['exp_dir'] = os.path.join(opts['exp_dir'], suffix)
 
     path = opts['exp_dir']

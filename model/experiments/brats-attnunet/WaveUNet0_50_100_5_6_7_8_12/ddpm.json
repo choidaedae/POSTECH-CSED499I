@@ -1,0 +1,44 @@
+{
+  "train": {
+    "batch_size": 64, 
+    "epochs": 50,
+    "val_freq": 1,
+    "sampling_freq": 1,
+    "save_path": "/root/daehyeonchoi/POSTECH-CSED491/wavelet-diffusion-segmentation/model/checkpoints",
+    "run_device": 2,
+    "lambda": 0.1,
+    "train_iters": 100
+  },
+
+  "validation":{
+    "batch_size": 1, 
+    "run_device": 2,
+    "val_iters": 400
+
+  },
+
+  "exp_dir": "/root/daehyeonchoi/POSTECH-CSED491/wavelet-diffusion-segmentation/model/experiments/brats-attnunet",
+  "model_type": "ddpm",
+  
+  "category": "brats",
+  "number_class": 4,
+  "ignore_label": -1,
+
+  "train_dir": "/root/daehyeonchoi/POSTECH-CSED491/wavelet-diffusion-segmentation/data_preprocessing/dataset/BraTS2021/train",
+  "val_dir": "/root/daehyeonchoi/POSTECH-CSED491/wavelet-diffusion-segmentation/data_preprocessing/dataset/BraTS2021/val",
+  "model_path": "",
+  "mode": "train",
+  
+  "dim": [240, 240, 48],
+  "steps": [0, 50, 100],
+  "blocks": [5, 6, 7, 8, 12],
+
+  "max_training": -1,
+  "wavelet_level": 4, 
+  "wavelet": true,
+  "L_contrast": true,
+  
+  "upsample_mode":"bilinear",
+  "share_noise": true,
+  "input_activations": false
+}
