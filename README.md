@@ -33,9 +33,9 @@ Brain Tumor Segmentation via Noised Multi-level Wavelet Feature Extraction.
 ![image](https://github.com/choidaedae/wavelet-diffusion-segmentation/assets/105369646/6d100eb0-b16b-451a-aa6c-1461d74046d8)
 
 #### Loss Function
-1. Feature matching Loss
+**1. Feature matching Loss**
 - Feature extractor is learned to reduce the L2 norm of multilevel wavelet inputs & feature maps it extracts
-2. Segmentation Loss
+**2. Segmentation Loss**
 - Weighted multi-class cross-entropy loss
 - Class distribution was highly imbalanced, weights as reciprocal of the class distribution for stable learning
 
