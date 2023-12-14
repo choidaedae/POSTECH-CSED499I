@@ -6,7 +6,7 @@
       "sampling_freq": 1,
       "save_path": "/root/daehyeonchoi/POSTECH-CSED491/wavelet-diffusion-segmentation/model/checkpoints",
       "run_device": 0,
-      "lambda": 0.2,
+      "lambda": 0.5,
       "train_iters": 100
     },
 

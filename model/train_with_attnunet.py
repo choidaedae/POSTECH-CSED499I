@@ -75,13 +75,12 @@ def train(args):
             l_contrast = L_contrast(b_out, b_label_flip)
             
             loss = l_seg + _lambda*l_contrast # l_contrast: dot product
-            if i % 1 == 0: print(f'[Train Mode] Current Epoch: {epoch}, Current Iteration: {i}, Train Loss: {loss}')
+            if i % 50 == 0: print(f'[Train Mode] Current Epoch: {epoch}, Current Iteration: {i}, Train Loss: {loss}')
             loss.requires_grad_(True)
             loss.backward()
             optimizer.step()
             wandb.log({'train_loss': loss})
-            
-            break
+
             
         if epoch % train_args['val_freq'] == 0: 
             _, dice = validation(args, epoch, seg_net)
@@ -164,7 +163,7 @@ if __name__ == '__main__':
     if len(opts['steps']) > 0:
         suffix = '_'.join([str(step) for step in opts['steps']])
         suffix += '_' + '_'.join([str(step) for step in opts['blocks']])
-        suffix += '_' +str(opts['train']['lambda']) + '_visualization'
+        suffix += '_' +str(opts['train']['lambda']) 
         opts['exp_dir'] = os.path.join(opts['exp_dir'], suffix)
 
     path = opts['exp_dir']
