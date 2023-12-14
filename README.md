@@ -30,7 +30,7 @@ Brain Tumor Segmentation via Noised Multi-level Wavelet Feature Extraction.
 - Can apply any general segmentation models (MLP, CNN, …)
 - WaveUNet gives extracted multi-level feature map to Feature Voter, makes a per class score map
 #### Model Architecture
-![architecture](https://github.com/choidaedae/wavelet-diffusion-segmentation/assets/105369646/f708c0af-a51d-4d9b-b4aa-9ba37bdffefc)
+![image](https://github.com/choidaedae/wavelet-diffusion-segmentation/assets/105369646/6d100eb0-b16b-451a-aa6c-1461d74046d8)
 
 #### Loss Function
 1. Feature matching Loss
